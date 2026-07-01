@@ -34,6 +34,6 @@ public class User {
     private Role role;
 
     @Column(nullable = false)
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
 }
