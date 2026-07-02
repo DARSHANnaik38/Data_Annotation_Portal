@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssignmentModal from "../components/AssignmentModal";
 
@@ -13,6 +12,7 @@ import {
 function Assignments() {
   const [assignments, setAssignments] = useState([]);
   const [show, setShow] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     load();
@@ -30,6 +30,7 @@ function Assignments() {
 
   async function remove(id) {
     if (!window.confirm("Delete assignment?")) return;
+
     await deleteAssignment(id);
     load();
   }
@@ -39,6 +40,12 @@ function Assignments() {
     load();
   }
 
+  const filteredAssignments = assignments.filter(
+    (a) =>
+      a.datasetName.toLowerCase().includes(search.toLowerCase()) ||
+      a.annotatorName.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <DashboardLayout>
       <div className="d-flex justify-content-between mb-3">
@@ -47,6 +54,17 @@ function Assignments() {
         <button className="btn btn-primary" onClick={() => setShow(true)}>
           Assign Dataset
         </button>
+      </div>
+
+      <div className="row mb-3">
+        <div className="col-md-4">
+          <input
+            className="form-control"
+            placeholder="Search Dataset / Annotator..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       <table className="table table-bordered">
@@ -62,16 +80,12 @@ function Assignments() {
         </thead>
 
         <tbody>
-          {assignments.map((a) => (
+          {filteredAssignments.map((a) => (
             <tr key={a.id}>
               <td>{a.id}</td>
-
               <td>{a.datasetName}</td>
-
               <td>{a.annotatorName}</td>
-
               <td>{a.status}</td>
-
               <td>{a.dueDate}</td>
 
               <td>

@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import DashboardLayout from "../layouts/DashboardLayout";
-
 import UserModal from "../components/UserModal";
 
 import {
@@ -13,10 +11,9 @@ import {
 
 function Users() {
   const [users, setUsers] = useState([]);
-
   const [show, setShow] = useState(false);
-
   const [selected, setSelected] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     load();
@@ -31,7 +28,6 @@ function Users() {
     else await createUser(user);
 
     setShow(false);
-
     load();
   }
 
@@ -39,9 +35,14 @@ function Users() {
     if (!window.confirm("Delete User?")) return;
 
     await deleteUser(id);
-
     load();
   }
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <DashboardLayout>
@@ -52,7 +53,6 @@ function Users() {
           className="btn btn-primary"
           onClick={() => {
             setSelected(null);
-
             setShow(true);
           }}
         >
@@ -60,34 +60,36 @@ function Users() {
         </button>
       </div>
 
+      <div className="row mb-3">
+        <div className="col-md-4">
+          <input
+            className="form-control"
+            placeholder="Search User..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
       <table className="table table-bordered">
         <thead>
           <tr>
             <th>ID</th>
-
             <th>Name</th>
-
             <th>Email</th>
-
             <th>Role</th>
-
             <th>Status</th>
-
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          {users.map((u) => (
+          {filteredUsers.map((u) => (
             <tr key={u.id}>
               <td>{u.id}</td>
-
               <td>{u.name}</td>
-
               <td>{u.email}</td>
-
               <td>{u.role}</td>
-
               <td>{u.enabled ? "Enabled" : "Disabled"}</td>
 
               <td>
@@ -95,7 +97,6 @@ function Users() {
                   className="btn btn-warning btn-sm me-2"
                   onClick={() => {
                     setSelected(u);
-
                     setShow(true);
                   }}
                 >
